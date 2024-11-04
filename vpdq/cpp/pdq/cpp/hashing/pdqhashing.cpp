@@ -311,6 +311,66 @@ bool pdqDihedralHash256esFromFloatLuma(
 }
 
 // ----------------------------------------------------------------
+// lexicographically minimum of the dihedral hashes
+bool pdqLexicographicMinDihedralHash256FromFloatLuma(
+    float* fullBuffer1, // numRows x numCols, row-major
+    float* fullBuffer2, // numRows x numCols, row-major
+    int numRows,
+    int numCols,
+    float buffer64x64[64][64],
+    float buffer16x64[16][64],
+    float buffer16x16[16][16],
+    float buffer16x16Aux[16][16],
+    Hash256* hashptrLexMin,
+    int& quality) {
+  Hash256 hashptrOriginal = Hash256();
+  Hash256 hashptrRotate90 = Hash256();
+  Hash256 hashptrRotate180 = Hash256();
+  Hash256 hashptrRotate270 = Hash256();
+  Hash256 hashptrFlipX = Hash256();
+  Hash256 hashptrFlipY = Hash256();
+  Hash256 hashptrFlipPlus1 = Hash256();
+  Hash256 hashptrFlipMinus1 = Hash256();
+  bool result = pdqDihedralHash256esFromFloatLuma(
+    fullBuffer1,
+    fullBuffer2,
+    numRows,
+    numCols,
+    buffer64x64,
+    buffer16x64,
+    buffer16x16,
+    buffer16x16Aux,
+    &hashptrOriginal,
+    &hashptrRotate90,
+    &hashptrRotate180,
+    &hashptrRotate270,
+    &hashptrFlipX,
+    &hashptrFlipY,
+    &hashptrFlipPlus1,
+    &hashptrFlipMinus1,
+    quality
+  );
+
+  Hash256 hashes[] = {
+    hashptrOriginal,
+    hashptrRotate90,
+    hashptrRotate180,
+    hashptrRotate270,
+    hashptrFlipX,
+    hashptrFlipY,
+    hashptrFlipPlus1,
+    hashptrFlipMinus1
+  };
+  *hashptrLexMin = hashes[0];
+  for (int i = 1; i < 8; i++) {
+    if (hashes[i] < *hashptrLexMin) {
+      *hashptrLexMin = hashes[i];
+    }
+  }
+  return result;
+}
+
+// ----------------------------------------------------------------
 // This is all heuristic (see the PDQ hashing doc). Quantization matters since
 // we want to count *significant* gradients, not just the some of many small
 // ones. The constants are all manually selected, and tuned as described in the

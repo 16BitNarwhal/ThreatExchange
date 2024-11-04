@@ -95,6 +95,18 @@ bool pdqDihedralHash256esFromFloatLuma(
     Hash256* hashptrFlipMinus1,
     int& quality);
 
+bool pdqLexicographicMinDihedralHash256FromFloatLuma(
+    float* fullBuffer1, // numRows x numCols, row-major
+    float* fullBuffer2, // numRows x numCols, row-major
+    int numRows,
+    int numCols,
+    float buffer64x64[64][64],
+    float buffer16x64[16][64],
+    float buffer16x16[16][16],
+    float buffer16x16Aux[16][16],
+    Hash256* hashptrLexMin,
+    int& quality);
+
 // ----------------------------------------------------------------
 // These are all nominally private to the hasher. However they are
 // exposed for testing/documentation purposes.
